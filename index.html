@@ -1,139 +1,104 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PRISOFT | Smart Solar Energy Control Center</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PRISOFT Solar System</title>
+
+<!-- Icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<!-- Chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- Map -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
 <style>
-:root{
-  --bg:#07111f;
-  --bg2:#0b1729;
-  --panel:#101c2f;
-  --panel2:#13233b;
-  --border:#243653;
-  --text:#edf6ff;
-  --muted:#8fa6c8;
-  --cyan:#00e5ff;
-  --green:#22c55e;
-  --yellow:#facc15;
-  --red:#ef4444;
-  --blue:#3b82f6;
-  --shadow:0 24px 70px rgba(0,0,0,.36);
-}
-*{box-sizing:border-box;margin:0;padding:0}
 body{
-  min-height:100vh;
-  font-family:Inter,Cairo,sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(circle at 15% 0%,rgba(0,229,255,.16),transparent 32%),
-    radial-gradient(circle at 85% 10%,rgba(34,197,94,.12),transparent 30%),
-    linear-gradient(145deg,var(--bg),var(--bg2));
+  background:#0b1220;
+  color:#fff;
+  font-family:'Segoe UI';
 }
-.app{max-width:1680px;margin:auto;padding:22px}
-.topbar{
-  display:flex;justify-content:space-between;align-items:center;gap:20px;flex-wrap:wrap;
-  padding:18px 20px;border:1px solid var(--border);border-radius:22px;background:rgba(16,28,47,.88);
-  box-shadow:var(--shadow);backdrop-filter:blur(16px);margin-bottom:18px
+.container{max-width:1400px;margin:auto;padding:20px}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
 }
-.brand{display:flex;align-items:center;gap:14px}
-.logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--cyan),#79ffbf);color:#04111f;display:grid;place-items:center;font-weight:900;font-size:22px}
-.brand h1{font-size:22px;font-weight:900}.brand p{color:var(--muted);font-size:13px;margin-top:4px}
-.statusbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}.pill{padding:10px 13px;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.045);font-size:13px;color:#dcecff;font-weight:700}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green);margin-right:7px}.dot.offline{background:var(--red);box-shadow:0 0 14px var(--red)}
-.layout{display:grid;grid-template-columns:280px 1fr;gap:18px}.sidebar{border:1px solid var(--border);background:rgba(16,28,47,.88);border-radius:22px;padding:18px;box-shadow:var(--shadow);height:max-content}.sidebar h3{font-size:15px;margin-bottom:12px;color:#fff}.nav{display:flex;flex-direction:column;gap:8px}.nav button{border:1px solid transparent;background:transparent;color:var(--muted);text-align:left;padding:11px 13px;border-radius:13px;font-weight:800;cursor:pointer}.nav button.active,.nav button:hover{background:rgba(0,229,255,.10);border-color:rgba(0,229,255,.28);color:#fff}.sideblock{margin-top:18px;padding-top:16px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;line-height:1.7}
-.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.card{background:rgba(16,28,47,.9);border:1px solid var(--border);border-radius:20px;padding:18px;box-shadow:0 16px 44px rgba(0,0,0,.24)}.card h3{font-size:13px;color:var(--muted);margin-bottom:10px;font-weight:800}.value{font-size:28px;font-weight:900}.unit{font-size:13px;color:var(--muted);margin-left:4px}.trend{margin-top:8px;font-size:12px;color:#bcd2ee;font-weight:700}.good{color:var(--green)}.warn{color:var(--yellow)}.bad{color:var(--red)}
-.main{display:grid;grid-template-columns:1.55fr .9fr;gap:18px;margin-bottom:18px}.panel{background:rgba(16,28,47,.9);border:1px solid var(--border);border-radius:22px;padding:20px;box-shadow:var(--shadow)}.panel-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;gap:10px}.panel-title h2{font-size:18px}.panel-title span{font-size:12px;color:var(--muted);font-weight:800}.chart-wrap{height:360px}.battery-wrap{display:grid;gap:14px}.battery-visual{height:150px;border:5px solid rgba(237,246,255,.72);border-radius:24px;padding:10px;position:relative}.battery-visual:after{content:"";position:absolute;right:-24px;top:45px;width:14px;height:48px;border-radius:0 9px 9px 0;background:rgba(237,246,255,.72)}.battery-fill{height:100%;border-radius:16px;background:linear-gradient(90deg,var(--green),#88ffbd);width:0%;transition:.4s}.battery-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.mini{padding:13px;border:1px solid var(--border);border-radius:15px;background:rgba(255,255,255,.04)}.mini b{display:block;font-size:20px}.mini span{font-size:12px;color:var(--muted);font-weight:700}
-.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.control h3{font-size:16px;margin-bottom:8px}.control p{font-size:13px;color:var(--muted);line-height:1.6}.switch{margin-top:14px;width:64px;height:34px;border-radius:999px;border:1px solid var(--border);background:#2a3448;position:relative;cursor:pointer}.switch:before{content:"";position:absolute;width:24px;height:24px;border-radius:50%;background:#fff;left:5px;top:4px;transition:.25s}.switch.on{background:linear-gradient(90deg,var(--green),#88ffbd)}.switch.on:before{left:33px}.mode-row{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}.mode-row button{border:1px solid var(--border);background:rgba(255,255,255,.05);color:#fff;border-radius:12px;padding:10px 12px;font-weight:800;cursor:pointer}.mode-row button.active{border-color:rgba(0,229,255,.5);background:rgba(0,229,255,.12)}
-.alerts{display:grid;gap:10px}.alert{display:flex;gap:10px;padding:12px;border-radius:15px;border:1px solid var(--border);background:rgba(255,255,255,.045)}.badge{font-size:11px;font-weight:900;padding:5px 8px;border-radius:999px;height:max-content}.critical{background:rgba(239,68,68,.16);color:#ffb4b4;border:1px solid rgba(239,68,68,.35)}.warning{background:rgba(250,204,21,.15);color:#fff1a5;border:1px solid rgba(250,204,21,.35)}.ok{background:rgba(34,197,94,.15);color:#b9ffd0;border:1px solid rgba(34,197,94,.35)}.alert strong{display:block;font-size:13px}.alert p{font-size:12px;color:var(--muted);line-height:1.6;margin-top:2px}.table{width:100%;border-collapse:collapse}.table th,.table td{border-bottom:1px solid var(--border);padding:11px;text-align:left;font-size:13px}.table th{color:var(--muted)}.footer{text-align:center;color:var(--muted);font-weight:700;font-size:13px;margin-top:18px}
-@media(max-width:1150px){.layout,.main{grid-template-columns:1fr}.grid{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}.sidebar{display:none}}@media(max-width:680px){.app{padding:12px}.grid{grid-template-columns:1fr}.brand h1{font-size:18px}.value{font-size:24px}}
+
+.card{
+  background:#121a2b;
+  padding:15px;
+  border-radius:12px;
+  box-shadow:0 10px 30px rgba(0,0,0,.3);
+}
+
+.value{font-size:26px;font-weight:bold}
+.icon{font-size:20px;margin-bottom:5px;color:#00e5ff}
+
+.switch{
+  width:55px;height:28px;background:#333;border-radius:20px;cursor:pointer;
+}
+.switch.on{background:#22c55e}
+
+#map{height:300px;border-radius:12px}
 </style>
 </head>
+
 <body>
-<div class="app">
-  <header class="topbar">
-    <div class="brand"><div class="logo">P</div><div><h1>PRISOFT Solar Energy Control Center</h1><p>ESP32 + Firebase Realtime Database + Professional IoT Dashboard</p></div></div>
-    <div class="statusbar">
-      <div class="pill"><span id="connDot" class="dot"></span><span id="connText">Connecting</span></div>
-      <div class="pill">Last update: <span id="lastUpdate">--</span></div>
-      <div class="pill">Device: <span id="deviceId">ESP32-SOLAR-01</span></div>
-    </div>
-  </header>
+<div class="container">
 
-  <div class="layout">
-    <aside class="sidebar">
-      <h3>System Modules</h3>
-      <div class="nav"><button class="active">Live Monitoring</button><button>Battery Analytics</button><button>Load Control</button><button>Alerts Center</button><button>Firebase Sync</button></div>
-      <div class="sideblock"><b>Architecture</b><br>ESP32 reads sensors, pushes telemetry to Firebase, dashboard displays live data and writes control commands back to Firebase.</div>
-    </aside>
+<h2><i class="fa-solid fa-solar-panel"></i> PRISOFT Solar Dashboard</h2>
+<p id="status">Connecting...</p>
 
-    <main>
-      <section class="grid">
-        <div class="card"><h3>Solar Voltage</h3><div><span id="solarVoltage" class="value">--</span><span class="unit">V</span></div><div class="trend">PV input voltage</div></div>
-        <div class="card"><h3>Solar Current</h3><div><span id="solarCurrent" class="value">--</span><span class="unit">A</span></div><div class="trend">Panel current</div></div>
-        <div class="card"><h3>Generated Power</h3><div><span id="solarPower" class="value">--</span><span class="unit">W</span></div><div class="trend good">Live production</div></div>
-        <div class="card"><h3>Load Consumption</h3><div><span id="loadPower" class="value">--</span><span class="unit">W</span></div><div class="trend">Active loads</div></div>
-        <div class="card"><h3>Battery Level</h3><div><span id="batteryPercent" class="value">--</span><span class="unit">%</span></div><div id="batteryText" class="trend">Battery SOC</div></div>
-        <div class="card"><h3>Battery Voltage</h3><div><span id="batteryVoltage" class="value">--</span><span class="unit">V</span></div><div class="trend">DC storage voltage</div></div>
-        <div class="card"><h3>Temperature</h3><div><span id="temperature" class="value">--</span><span class="unit">°C</span></div><div class="trend">Battery environment</div></div>
-        <div class="card"><h3>Battery Health</h3><div><span id="batteryHealth" class="value">--</span><span class="unit">%</span></div><div class="trend good">Estimated SOH</div></div>
-      </section>
+<div class="grid">
 
-      <section class="main">
-        <div class="panel"><div class="panel-title"><h2>Production vs Consumption</h2><span>Last 20 readings</span></div><div class="chart-wrap"><canvas id="energyChart"></canvas></div></div>
-        <div class="panel battery-wrap"><div class="panel-title"><h2>Battery Status</h2><span id="batteryMode">Auto protected</span></div><div class="battery-visual"><div id="batteryFill" class="battery-fill"></div></div><div class="battery-meta"><div class="mini"><b id="remainingHours">-- h</b><span>Estimated remaining</span></div><div class="mini"><b id="netPower">-- W</b><span>Net power balance</span></div><div class="mini"><b id="chargeState">--</b><span>Charge state</span></div><div class="mini"><b id="systemRisk">--</b><span>System risk</span></div></div></div>
-      </section>
+<div class="card"><div class="icon"><i class="fa-solid fa-bolt"></i></div><div id="v" class="value">--</div></div>
+<div class="card"><div class="icon"><i class="fa-solid fa-plug"></i></div><div id="c" class="value">--</div></div>
+<div class="card"><div class="icon"><i class="fa-solid fa-battery-full"></i></div><div id="b" class="value">--</div></div>
+<div class="card"><div class="icon"><i class="fa-solid fa-temperature-half"></i></div><div id="t" class="value">--</div></div>
 
-      <section class="controls">
-        <div class="panel control"><h3>Critical Load</h3><p>Lighting, router, phone charging, emergency communication.</p><div id="load1" class="switch on" data-load="load1"></div></div>
-        <div class="panel control"><h3>Medium Load</h3><p>Fan, laptop, screen, low-priority household devices.</p><div id="load2" class="switch on" data-load="load2"></div></div>
-        <div class="panel control"><h3>Non-Critical Load</h3><p>High consumption devices. Auto disconnected when battery is low.</p><div id="load3" class="switch" data-load="load3"></div></div>
-      </section>
+<div class="card"><div class="icon"><i class="fa-solid fa-gauge-high"></i></div><div id="p" class="value">--</div></div>
+<div class="card"><div class="icon"><i class="fa-solid fa-house"></i></div><div id="l" class="value">--</div></div>
+<div class="card"><div class="icon"><i class="fa-solid fa-clock"></i></div><div id="rt" class="value">--</div></div>
+<div class="card"><div class="icon"><i class="fa-solid fa-chart-line"></i></div><div id="np" class="value">--</div></div>
 
-      <section class="main">
-        <div class="panel"><div class="panel-title"><h2>Smart Alerts</h2><span id="alertCount">0 alerts</span></div><div id="alerts" class="alerts"></div></div>
-        <div class="panel"><div class="panel-title"><h2>Control Mode</h2><span>Writes to /commands</span></div><p style="color:var(--muted);font-size:13px;line-height:1.7">Use Auto mode for battery protection. Manual mode lets the dashboard control relays directly through Firebase.</p><div class="mode-row"><button id="autoBtn" class="active">AUTO</button><button id="manualBtn">MANUAL</button><button id="ecoBtn">ECO</button></div></div>
-      </section>
+</div>
 
-      <section class="panel"><div class="panel-title"><h2>Live Telemetry Snapshot</h2><span>Firebase path: /devices/ESP32-SOLAR-01/live</span></div><table class="table"><thead><tr><th>Metric</th><th>Value</th><th>Status</th></tr></thead><tbody id="snapshotRows"></tbody></table></section>
-      <footer class="footer">Programmed By PRISOFT — Smart Solar Energy Management System for Crisis-Affected Environments</footer>
-    </main>
-  </div>
+<br>
+
+<h3><i class="fa-solid fa-sliders"></i> Load Control</h3>
+<div class="grid">
+<div class="card">Load1 <div id="load1" class="switch"></div></div>
+<div class="card">Load2 <div id="load2" class="switch"></div></div>
+<div class="card">Load3 <div id="load3" class="switch"></div></div>
+</div>
+
+<br>
+
+<h3><i class="fa-solid fa-triangle-exclamation"></i> Alerts</h3>
+<div id="alerts"></div>
+
+<br>
+
+<h3><i class="fa-solid fa-chart-line"></i> Energy Chart</h3>
+<canvas id="chart"></canvas>
+
+<br>
+
+<h3><i class="fa-solid fa-map-location-dot"></i> System Location</h3>
+<div id="map"></div>
+
 </div>
 
 <script type="module">
-/*
-Firebase Realtime Database structure:
-/devices/ESP32-SOLAR-01/live
-{
-  solarVoltage: 18.7,
-  solarCurrent: 4.1,
-  batteryVoltage: 12.6,
-  batteryPercent: 74,
-  batteryHealth: 91,
-  temperature: 32,
-  loadPower: 135,
-  load1: true,
-  load2: true,
-  load3: false,
-  timestamp: 1710000000
-}
 
-/devices/ESP32-SOLAR-01/commands
-{
-  mode: "AUTO",
-  load1: true,
-  load2: true,
-  load3: false
-}
-*/
+const DEVICE = "ESP32-SOLAR-01";
 
-const USE_FIREBASE = true; // Change to true after adding your Firebase config.
-const DEVICE_ID = 'ESP32-SOLAR-01';
-
+// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCu7kII41Ru2bHHfxuRz0LL3nAM9syXCPs",
   authDomain: "smart-solar-energy-80b88.firebaseapp.com",
@@ -144,36 +109,97 @@ const firebaseConfig = {
   appId: "1:760586246522:web:27e7b46d498085bcdf9ec3",
   measurementId: "G-6CPKBM5GVQ"
 };
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 
-const $ = id => document.getElementById(id);
-let db = null;
-let commandRef = null;
-let mode = 'AUTO';
+const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
+const { getDatabase, ref, onValue, update } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js");
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// Chart
 const labels=[], prod=[], cons=[];
-const chart = new Chart($('energyChart'),{
+const chart = new Chart(document.getElementById("chart"),{
   type:'line',
   data:{labels,datasets:[
-    {label:'Generated Power W',data:prod,borderWidth:3,tension:.35},
-    {label:'Load Consumption W',data:cons,borderWidth:3,tension:.35}
-  ]},
-  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#edf6ff'}}},scales:{x:{ticks:{color:'#8fa6c8'},grid:{color:'rgba(255,255,255,.06)'}},y:{ticks:{color:'#8fa6c8'},grid:{color:'rgba(255,255,255,.06)'}}}}
+    {label:'Production',data:prod},
+    {label:'Consumption',data:cons}
+  ]}
 });
-function n(v,d=1){return Number(v||0).toFixed(d)}
-function setConn(ok,text){$('connDot').classList.toggle('offline',!ok);$('connText').textContent=text}
-function setSwitch(id,on){$(id).classList.toggle('on',!!on)}
-function risk(data){if(data.batteryPercent<=20||data.temperature>=50)return 'Critical';if(data.batteryPercent<=40||data.temperature>=45)return 'Medium';return 'Low'}
-function alerts(data){const list=[];if(data.batteryPercent<=20)list.push(['critical','Battery Critical','Battery level is too low. Non-critical and medium loads should be disconnected.']);else if(data.batteryPercent<=40)list.push(['warning','Battery Low','System should reduce medium and non-critical loads.']);else list.push(['ok','Battery Good','Battery level is safe for normal operation.']);if(data.temperature>=45)list.push(['critical','High Battery Temperature','Battery temperature is above the safe operating range.']);if(data.loadPower>data.solarPower&&data.batteryPercent<60)list.push(['warning','Over Consumption','Load consumption is higher than solar generation.']);$('alertCount').textContent=list.length+' alerts';$('alerts').innerHTML=list.map(a=>`<div class="alert"><span class="badge ${a[0]}">${a[0].toUpperCase()}</span><div><strong>${a[1]}</strong><p>${a[2]}</p></div></div>`).join('')}
-function snapshot(data){const rows=[['Solar Voltage',n(data.solarVoltage)+' V','Live'],['Solar Current',n(data.solarCurrent)+' A','Live'],['Generated Power',n(data.solarPower,0)+' W',data.solarPower>data.loadPower?'Surplus':'Deficit'],['Load Power',n(data.loadPower,0)+' W','Active'],['Battery Level',n(data.batteryPercent,0)+' %',data.batteryPercent>40?'Safe':'Low'],['Battery Health',n(data.batteryHealth,0)+' %',data.batteryHealth>75?'Good':'Weak'],['Temperature',n(data.temperature)+' °C',data.temperature<45?'Safe':'Hot'],['Mode',mode,'Control']];$('snapshotRows').innerHTML=rows.map(r=>`<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('')}
-function update(data){data.solarPower=data.solarVoltage*data.solarCurrent;const net=data.solarPower-data.loadPower;const remaining=data.loadPower>0?((data.batteryPercent/100)*1000/data.loadPower):0;$('solarVoltage').textContent=n(data.solarVoltage);$('solarCurrent').textContent=n(data.solarCurrent);$('solarPower').textContent=n(data.solarPower,0);$('loadPower').textContent=n(data.loadPower,0);$('batteryPercent').textContent=n(data.batteryPercent,0);$('batteryVoltage').textContent=n(data.batteryVoltage);$('temperature').textContent=n(data.temperature);$('batteryHealth').textContent=n(data.batteryHealth,0);$('batteryFill').style.width=Math.max(0,Math.min(100,data.batteryPercent))+'%';$('remainingHours').textContent=n(remaining,1)+' h';$('netPower').textContent=(net>=0?'+':'')+n(net,0)+' W';$('chargeState').textContent=net>=0?'Charging':'Discharging';$('systemRisk').textContent=risk(data);$('batteryText').textContent=data.batteryPercent>70?'Excellent':data.batteryPercent>40?'Normal':'Low';$('lastUpdate').textContent=new Date().toLocaleString();setSwitch('load1',data.load1);setSwitch('load2',data.load2);setSwitch('load3',data.load3);alerts(data);snapshot(data);labels.push(new Date().toLocaleTimeString());prod.push(Math.round(data.solarPower));cons.push(Math.round(data.loadPower));if(labels.length>20){labels.shift();prod.shift();cons.shift()}chart.update()}
-function demo(){const batteryPercent=Math.max(15,Math.min(97,62+(Math.random()*36-18)));const solarVoltage=17.5+Math.random()*5;const solarCurrent=2.5+Math.random()*4.5;const loadPower=80+Math.random()*230;return{solarVoltage,solarCurrent,batteryVoltage:11.7+(batteryPercent/100)*1.2,batteryPercent,batteryHealth:82+Math.random()*15,temperature:26+Math.random()*21,loadPower,load1:true,load2:batteryPercent>35,load3:batteryPercent>65,timestamp:Date.now()}}
-async function writeCommand(key,value){if(!USE_FIREBASE||!commandRef)return;const { update } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js');await update(commandRef,{[key]:value,updatedAt:Date.now()})}
-document.querySelectorAll('.switch').forEach(sw=>sw.onclick=()=>{const key=sw.dataset.load;const value=!sw.classList.contains('on');setSwitch(key,value);writeCommand(key,value)});
-function setMode(m){mode=m;['autoBtn','manualBtn','ecoBtn'].forEach(id=>$(id).classList.remove('active'));$((m==='AUTO'?'autoBtn':m==='MANUAL'?'manualBtn':'ecoBtn')).classList.add('active');writeCommand('mode',m);snapshot({solarVoltage:$('solarVoltage').textContent,solarCurrent:$('solarCurrent').textContent,solarPower:0,loadPower:0,batteryPercent:$('batteryPercent').textContent,batteryHealth:$('batteryHealth').textContent,temperature:$('temperature').textContent})}
-$('autoBtn').onclick=()=>setMode('AUTO');$('manualBtn').onclick=()=>setMode('MANUAL');$('ecoBtn').onclick=()=>setMode('ECO');
-if(USE_FIREBASE){try{const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js');const { getDatabase, ref, onValue } = await import('https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js');const app=initializeApp(firebaseConfig);db=getDatabase(app);commandRef=ref(db,`devices/${DEVICE_ID}/commands`);onValue(ref(db,`devices/${DEVICE_ID}/live`),snap=>{if(snap.exists()){setConn(true,'Firebase Live');update(snap.val())}})}catch(e){console.error(e);setConn(false,'Demo Mode');setInterval(()=>update(demo()),2000)}}else{setConn(false,'Demo Mode');update(demo());setInterval(()=>update(demo()),2000)}
+
+// Map
+const map = L.map('map').setView([31.95,35.23], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+const marker = L.marker([31.95,35.23]).addTo(map);
+
+// Firebase
+onValue(ref(db,`devices/${DEVICE}/live`),(snap)=>{
+
+if(!snap.exists()) return;
+
+const d = snap.val();
+
+status.innerText="Firebase Live";
+
+// calculations
+let power = d.solarVoltage * d.solarCurrent;
+let net = power - d.loadPower;
+let remaining = d.loadPower>0 ? ((d.batteryPercent/100)*1000/d.loadPower) : 0;
+
+// UI
+v.innerText = d.solarVoltage+" V";
+c.innerText = d.solarCurrent+" A";
+b.innerText = d.batteryPercent+" %";
+t.innerText = d.temperature+" °C";
+
+p.innerText = power.toFixed(0)+" W";
+l.innerText = d.loadPower+" W";
+rt.innerText = remaining.toFixed(1)+" h";
+np.innerText = net.toFixed(0)+" W";
+
+// chart
+labels.push(new Date().toLocaleTimeString());
+prod.push(power);
+cons.push(d.loadPower);
+
+if(labels.length>20){
+labels.shift();prod.shift();cons.shift();
+}
+chart.update();
+
+// switches
+setSwitch("load1",d.load1);
+setSwitch("load2",d.load2);
+setSwitch("load3",d.load3);
+
+// alerts
+let html="";
+if(d.batteryPercent<20) html+="<p style='color:red'>Battery Critical</p>";
+else if(d.batteryPercent<40) html+="<p style='color:orange'>Battery Low</p>";
+else html+="<p style='color:green'>Battery Good</p>";
+
+if(d.temperature>45) html+="<p style='color:red'>High Temperature</p>";
+if(d.loadPower>power) html+="<p style='color:orange'>Overload</p>";
+
+alerts.innerHTML=html;
+
+});
+
+// control
+function setSwitch(id,state){
+let el=document.getElementById(id);
+el.classList.toggle("on",state);
+
+el.onclick=()=>{
+let newState=!el.classList.contains("on");
+el.classList.toggle("on",newState);
+
+update(ref(db,`devices/${DEVICE}/commands`),{
+[id]:newState
+});
+};
+}
+
 </script>
+
 </body>
 </html>
