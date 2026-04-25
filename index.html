@@ -1,104 +1,176 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>PRISOFT Solar System</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PRISOFT | AI Solar Energy Command Center</title>
 
-<!-- Icons -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
-<!-- Chart -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<!-- Map -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 
 <style>
+:root{
+  --bg:#040816;
+  --bg2:#071225;
+  --card:rgba(15,28,48,.82);
+  --card2:rgba(23,39,66,.72);
+  --border:rgba(139,206,255,.18);
+  --text:#eff8ff;
+  --muted:#8ea8c8;
+  --cyan:#00e5ff;
+  --cyan2:#4df7ff;
+  --green:#20ffa3;
+  --yellow:#ffd166;
+  --red:#ff4d6d;
+  --purple:#a78bfa;
+  --blue:#3b82f6;
+  --shadow:0 28px 90px rgba(0,0,0,.42);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
 body{
-  background:#0b1220;
-  color:#fff;
-  font-family:'Segoe UI';
+  min-height:100vh;
+  font-family:Inter,system-ui,sans-serif;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(0,229,255,.20), transparent 34%),
+    radial-gradient(circle at 82% 8%, rgba(167,139,250,.15), transparent 30%),
+    linear-gradient(145deg,var(--bg),var(--bg2));
+  overflow-x:hidden;
 }
-.container{max-width:1400px;margin:auto;padding:20px}
-
-.grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;
+  background-image:linear-gradient(rgba(255,255,255,.032) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.032) 1px,transparent 1px);
+  background-size:46px 46px;
+  mask-image:linear-gradient(to bottom,#000,transparent 90%);
 }
-
-.card{
-  background:#121a2b;
-  padding:15px;
-  border-radius:12px;
-  box-shadow:0 10px 30px rgba(0,0,0,.3);
+body::after{
+  content:"";position:fixed;width:480px;height:480px;border-radius:50%;right:-150px;bottom:-180px;z-index:0;pointer-events:none;
+  background:radial-gradient(circle,rgba(32,255,163,.15),transparent 65%);filter:blur(6px);
+  animation:floatGlow 8s ease-in-out infinite alternate;
 }
+@keyframes floatGlow{from{transform:translateY(0)}to{transform:translateY(-35px)}}
 
-.value{font-size:26px;font-weight:bold}
-.icon{font-size:20px;margin-bottom:5px;color:#00e5ff}
-
-.switch{
-  width:55px;height:28px;background:#333;border-radius:20px;cursor:pointer;
+.login-screen{
+  position:fixed;inset:0;z-index:99;display:grid;place-items:center;padding:22px;
+  background:radial-gradient(circle at 35% 10%,rgba(0,229,255,.22),transparent 36%),linear-gradient(145deg,#020617,#06152c 55%,#030712);
 }
-.switch.on{background:#22c55e}
+.login-card{
+  width:min(460px,100%);padding:34px;border-radius:32px;background:rgba(12,24,42,.78);border:1px solid var(--border);
+  box-shadow:0 30px 110px rgba(0,0,0,.58);backdrop-filter:blur(22px);position:relative;overflow:hidden;
+}
+.login-card::before{content:"";position:absolute;inset:-2px;background:linear-gradient(135deg,rgba(0,229,255,.26),transparent 36%,rgba(32,255,163,.2));z-index:-1}
+.login-logo{width:76px;height:76px;border-radius:24px;display:grid;place-items:center;margin:0 auto 18px;background:linear-gradient(135deg,var(--cyan),var(--green));color:#04111f;font:900 34px Orbitron;box-shadow:0 0 44px rgba(0,229,255,.35)}
+.login-card h1{text-align:center;font:900 26px Orbitron;letter-spacing:1px;margin-bottom:8px}.login-card p{text-align:center;color:var(--muted);line-height:1.6;margin-bottom:22px}.field{margin-bottom:14px}.field label{display:block;font-size:12px;color:#bdd6f4;font-weight:800;margin-bottom:7px}.field input{width:100%;padding:14px 15px;border-radius:15px;border:1px solid var(--border);background:rgba(255,255,255,.07);color:#fff;outline:none;font-weight:700}.field input:focus{border-color:rgba(0,229,255,.65);box-shadow:0 0 0 4px rgba(0,229,255,.10)}.login-btn{width:100%;border:0;border-radius:16px;padding:15px;font-weight:900;color:#02101c;cursor:pointer;background:linear-gradient(135deg,var(--cyan),var(--green));box-shadow:0 18px 42px rgba(0,229,255,.20);transition:.25s}.login-btn:hover{transform:translateY(-2px)}.login-help{text-align:center;color:var(--muted);font-size:12px;margin-top:13px}.login-error{display:none;color:#ffc0cb;background:rgba(255,77,109,.14);border:1px solid rgba(255,77,109,.35);padding:10px;border-radius:13px;margin-bottom:12px;text-align:center;font-weight:800}
 
-#map{height:300px;border-radius:12px}
+.app{position:relative;z-index:1;max-width:1740px;margin:auto;padding:22px;display:none}
+.app.show{display:block;animation:fadeUp .6s ease both}@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;padding:18px 20px;border:1px solid var(--border);border-radius:28px;background:rgba(11,23,40,.76);backdrop-filter:blur(20px);box-shadow:var(--shadow);margin-bottom:18px}.brand{display:flex;align-items:center;gap:14px}.logo{width:58px;height:58px;border-radius:20px;display:grid;place-items:center;font:900 25px Orbitron;background:linear-gradient(135deg,var(--cyan),var(--green));color:#03111f;box-shadow:0 0 44px rgba(0,229,255,.28)}.brand h2{font:900 24px Orbitron;letter-spacing:1px}.brand p{color:var(--muted);font-size:13px;margin-top:4px}.top-actions{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.pill{display:flex;align-items:center;gap:8px;padding:10px 13px;border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,.055);font-size:13px;font-weight:800;color:#e5f5ff}.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 14px var(--green)}.dot.off{background:var(--red);box-shadow:0 0 14px var(--red)}.logout{border:1px solid rgba(255,77,109,.35);background:rgba(255,77,109,.13);color:#ffd5dd;padding:10px 14px;border-radius:999px;font-weight:900;cursor:pointer}
+
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-bottom:18px}.hero-card,.panel,.metric,.control-card{background:var(--card);border:1px solid var(--border);border-radius:28px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}.hero-card{padding:26px;min-height:260px;position:relative;overflow:hidden}.hero-card h1{font:900 42px Orbitron;line-height:1.15;margin-bottom:12px}.hero-card p{color:var(--muted);max-width:760px;line-height:1.8}.sunmoon{position:absolute;right:48px;bottom:34px;width:130px;height:130px;border-radius:50%;display:grid;place-items:center;font-size:52px;animation:pulse 3s ease-in-out infinite;background:radial-gradient(circle,#fff2a8,#ffb703 55%,#fb8500);box-shadow:0 0 75px rgba(255,183,3,.45)}.sunmoon.night{background:radial-gradient(circle,#fff,#b8c7ff 48%,#5563ff);box-shadow:0 0 70px rgba(120,145,255,.45)}@keyframes pulse{50%{transform:scale(1.06)}}.orbit-line{position:absolute;left:34px;bottom:36px;width:340px;height:120px;border:2px dashed rgba(0,229,255,.25);border-radius:50%;transform:rotate(-12deg)}
+
+.ai-card{padding:22px;display:grid;gap:12px}.ai-score{display:grid;grid-template-columns:145px 1fr;gap:18px;align-items:center}.ring{width:145px;height:145px;border-radius:50%;display:grid;place-items:center;background:conic-gradient(var(--green) 0deg,var(--green) 252deg,rgba(255,255,255,.09) 252deg);box-shadow:0 0 44px rgba(32,255,163,.16)}.ring-inner{width:108px;height:108px;border-radius:50%;display:grid;place-items:center;background:#0b1729;border:1px solid var(--border);font:900 28px Orbitron}.ai-list{display:grid;gap:10px}.ai-item{padding:11px 12px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);display:flex;align-items:center;justify-content:space-between;gap:10px}.ai-item span{color:var(--muted);font-size:13px}.ai-item b{font-size:14px}
+
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}.metric{padding:18px;position:relative;overflow:hidden;transition:.28s}.metric:hover{transform:translateY(-5px);border-color:rgba(0,229,255,.38);box-shadow:0 25px 70px rgba(0,229,255,.12)}.metric::after{content:"";position:absolute;inset:auto -30px -45px auto;width:110px;height:110px;border-radius:50%;background:rgba(0,229,255,.08)}.metric-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}.metric-icon{width:44px;height:44px;border-radius:16px;display:grid;place-items:center;background:rgba(0,229,255,.11);color:var(--cyan);font-size:20px}.metric h3{font-size:13px;color:var(--muted);font-weight:900}.value{font:900 30px Orbitron;letter-spacing:.6px}.unit{font-size:13px;color:var(--muted);margin-left:4px}.small{font-size:12px;color:#b8cdec;margin-top:9px;font-weight:800}
+
+.main-grid{display:grid;grid-template-columns:1.35fr .9fr;gap:18px;margin-bottom:18px}.panel{padding:20px}.panel-title{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}.panel-title h2{font:900 19px Orbitron}.panel-title span{font-size:12px;color:var(--muted);font-weight:800}.chart-wrap{height:360px}.battery-visual{height:170px;border:5px solid rgba(239,248,255,.72);border-radius:28px;padding:12px;position:relative;margin-bottom:14px}.battery-visual::after{content:"";position:absolute;right:-27px;top:55px;width:16px;height:54px;background:rgba(239,248,255,.72);border-radius:0 10px 10px 0}.battery-fill{height:100%;width:0%;border-radius:18px;background:linear-gradient(90deg,var(--green),var(--cyan2));transition:.55s;box-shadow:0 0 30px rgba(32,255,163,.32)}.battery-meta{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.mini{background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:13px}.mini span{display:block;color:var(--muted);font-size:12px;font-weight:800}.mini b{font:900 19px Orbitron}.controls{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:18px}.control-card{padding:18px}.control-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.control-card h3{font-size:16px}.control-card p{font-size:13px;color:var(--muted);line-height:1.6}.switch{width:64px;height:34px;border-radius:999px;background:#26344a;border:1px solid var(--border);cursor:pointer;position:relative;transition:.25s}.switch::after{content:"";position:absolute;width:24px;height:24px;border-radius:50%;left:5px;top:4px;background:#fff;transition:.25s}.switch.on{background:linear-gradient(90deg,var(--green),var(--cyan))}.switch.on::after{left:33px}.alerts{display:grid;gap:10px}.alert{padding:13px 14px;border-radius:16px;border:1px solid rgba(255,255,255,.08);display:flex;align-items:flex-start;gap:10px}.alert.green{background:rgba(32,255,163,.12);color:#c9ffe8}.alert.yellow{background:rgba(255,209,102,.13);color:#fff0c7}.alert.red{background:rgba(255,77,109,.14);color:#ffd2da}.alert i{margin-top:2px}.map-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px}.map-box{height:365px;border-radius:24px;overflow:hidden;border:1px solid var(--border);box-shadow:var(--shadow)}#map{height:100%;width:100%}.forecast{display:grid;gap:10px}.forecast-row{display:grid;grid-template-columns:130px 1fr 80px;gap:10px;align-items:center;padding:12px;border-radius:16px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08)}.bar{height:9px;border-radius:99px;background:rgba(255,255,255,.10);overflow:hidden}.bar span{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--cyan),var(--green));width:50%}.footer{text-align:center;color:var(--muted);font-weight:800;font-size:13px;margin:20px 0 6px}
+
+@media(max-width:1180px){.hero,.main-grid,.map-grid{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(2,1fr)}.controls{grid-template-columns:1fr}.sunmoon,.orbit-line{display:none}}
+@media(max-width:680px){.app{padding:12px}.metrics{grid-template-columns:1fr}.brand h2{font-size:18px}.hero-card h1{font-size:28px}.ai-score{grid-template-columns:1fr}.ring{margin:auto}.battery-meta{grid-template-columns:1fr}.forecast-row{grid-template-columns:1fr}}
 </style>
 </head>
 
 <body>
-<div class="container">
+<section id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-logo">P</div>
+    <h1>PRISOFT Solar Energy </h1>
+    <p>Best App For Control Your Solar System</p>
+    <div id="loginError" class="login-error">Invalid email or password</div>
+    <div class="field"><label>Email</label><input id="loginEmail" type="email" value="admin@prisoft.local" autocomplete="username"></div>
+    <div class="field"><label>Password</label><input id="loginPassword" type="password" value="123456" autocomplete="current-password"></div>
+    <button id="loginBtn" class="login-btn"><i class="fa-solid fa-shield-halved"></i> Enter Dashboard</button>
+    <div class="login-help">login: admin@prisoft.local / Password: 123456</div>
+  </div>
+</section>
 
-<h2><i class="fa-solid fa-solar-panel"></i> PRISOFT Solar Dashboard</h2>
-<p id="status">Connecting...</p>
+<div id="app" class="app">
+  <header class="topbar">
+    <div class="brand"><div class="logo">P</div><div><h2>PRISOFT AI ENERGY</h2><p>Night/Day Simulation • AI Battery Prediction • Khan Younis, Gaza</p></div></div>
+    <div class="top-actions">
+      <div class="pill"><span id="connDot" class="dot off"></span><span id="status">Connecting...</span></div>
+      <div class="pill"><i class="fa-regular fa-clock"></i><span id="lastUpdate">--</span></div>
+      <div class="pill"><i class="fa-solid fa-microchip"></i> ESP32-SOLAR-01 Simulator</div>
+      <button id="logoutBtn" class="logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+    </div>
+  </header>
 
-<div class="grid">
+  <section class="hero">
+    <div class="hero-card">
+      <h1>Smart Solar Energy<br>Control Center</h1>
+      <p>Professional IoT dashboard with Firebase Realtime Database, simulated solar behavior, animated live telemetry, load control, map visualization, and AI-style energy predictions.</p>
+      <div class="orbit-line"></div>
+      <div id="sunMoon" class="sunmoon">☀️</div>
+    </div>
+    <div class="ai-card panel">
+      <div class="panel-title"><h2>AI Prediction Engine</h2><span id="dayModeText">DAY MODE</span></div>
+      <div class="ai-score">
+        <div id="aiRing" class="ring"><div id="aiScore" class="ring-inner">--%</div></div>
+        <div class="ai-list">
+          <div class="ai-item"><span>Predicted shutdown</span><b id="shutdownPrediction">--</b></div>
+          <div class="ai-item"><span>Battery trend</span><b id="batteryTrend">--</b></div>
+          <div class="ai-item"><span>Recommended mode</span><b id="recommendedMode">--</b></div>
+          <div class="ai-item"><span>Solar intensity</span><b id="solarIntensity">--</b></div>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<div class="card"><div class="icon"><i class="fa-solid fa-bolt"></i></div><div id="v" class="value">--</div></div>
-<div class="card"><div class="icon"><i class="fa-solid fa-plug"></i></div><div id="c" class="value">--</div></div>
-<div class="card"><div class="icon"><i class="fa-solid fa-battery-full"></i></div><div id="b" class="value">--</div></div>
-<div class="card"><div class="icon"><i class="fa-solid fa-temperature-half"></i></div><div id="t" class="value">--</div></div>
+  <section class="metrics">
+    <div class="metric"><div class="metric-top"><h3>Solar Voltage</h3><div class="metric-icon"><i class="fa-solid fa-bolt"></i></div></div><span id="v" class="value">--</span><span class="unit">V</span><div class="small">PV input voltage</div></div>
+    <div class="metric"><div class="metric-top"><h3>Solar Current</h3><div class="metric-icon"><i class="fa-solid fa-plug-circle-bolt"></i></div></div><span id="c" class="value">--</span><span class="unit">A</span><div class="small">Panel current</div></div>
+    <div class="metric"><div class="metric-top"><h3>Battery Level</h3><div class="metric-icon"><i class="fa-solid fa-battery-three-quarters"></i></div></div><span id="b" class="value">--</span><span class="unit">%</span><div id="batteryText" class="small">SOC</div></div>
+    <div class="metric"><div class="metric-top"><h3>Temperature</h3><div class="metric-icon"><i class="fa-solid fa-temperature-half"></i></div></div><span id="t" class="value">--</span><span class="unit">°C</span><div class="small">Battery environment</div></div>
+    <div class="metric"><div class="metric-top"><h3>Generated Power</h3><div class="metric-icon"><i class="fa-solid fa-solar-panel"></i></div></div><span id="p" class="value">--</span><span class="unit">W</span><div class="small">Production</div></div>
+    <div class="metric"><div class="metric-top"><h3>Load Consumption</h3><div class="metric-icon"><i class="fa-solid fa-house-signal"></i></div></div><span id="l" class="value">--</span><span class="unit">W</span><div class="small">Active loads</div></div>
+    <div class="metric"><div class="metric-top"><h3>Remaining Time</h3><div class="metric-icon"><i class="fa-solid fa-hourglass-half"></i></div></div><span id="rt" class="value">--</span><span class="unit">h</span><div class="small">Estimated runtime</div></div>
+    <div class="metric"><div class="metric-top"><h3>Net Power</h3><div class="metric-icon"><i class="fa-solid fa-wave-square"></i></div></div><span id="np" class="value">--</span><span class="unit">W</span><div class="small">Production - load</div></div>
+  </section>
 
-<div class="card"><div class="icon"><i class="fa-solid fa-gauge-high"></i></div><div id="p" class="value">--</div></div>
-<div class="card"><div class="icon"><i class="fa-solid fa-house"></i></div><div id="l" class="value">--</div></div>
-<div class="card"><div class="icon"><i class="fa-solid fa-clock"></i></div><div id="rt" class="value">--</div></div>
-<div class="card"><div class="icon"><i class="fa-solid fa-chart-line"></i></div><div id="np" class="value">--</div></div>
+  <section class="main-grid">
+    <div class="panel"><div class="panel-title"><h2>Energy Flow Chart</h2><span>Production / Consumption / Battery</span></div><div class="chart-wrap"><canvas id="chart"></canvas></div></div>
+    <div class="panel"><div class="panel-title"><h2>Battery Core</h2><span id="batteryMode">Protected</span></div><div class="battery-visual"><div id="batteryFill" class="battery-fill"></div></div><div class="battery-meta"><div class="mini"><span>Battery Voltage</span><b id="batteryVoltage">-- V</b></div><div class="mini"><span>Battery Health</span><b id="batteryHealth">--%</b></div><div class="mini"><span>Charge State</span><b id="chargeState">--</b></div><div class="mini"><span>System Risk</span><b id="systemRisk">--</b></div></div></div>
+  </section>
 
-</div>
+  <section class="controls">
+    <div class="control-card"><div class="control-head"><h3><i class="fa-solid fa-lightbulb"></i> Critical Load</h3><div id="load1" class="switch"></div></div><p>Lighting, router, emergency communication. Usually remains ON.</p></div>
+    <div class="control-card"><div class="control-head"><h3><i class="fa-solid fa-fan"></i> Medium Load</h3><div id="load2" class="switch"></div></div><p>Fan, laptop, monitor. Auto reduced when battery is low.</p></div>
+    <div class="control-card"><div class="control-head"><h3><i class="fa-solid fa-plug-circle-xmark"></i> Heavy Load</h3><div id="load3" class="switch"></div></div><p>Non-critical devices. Automatically disconnected at night or low battery.</p></div>
+  </section>
 
-<br>
+  <section class="main-grid">
+    <div class="panel"><div class="panel-title"><h2>Smart Alerts</h2><span id="alertCount">0 alerts</span></div><div id="alerts" class="alerts"></div></div>
+    <div class="panel"><div class="panel-title"><h2>Prediction Timeline</h2><span>Next hours</span></div><div id="forecast" class="forecast"></div></div>
+  </section>
 
-<h3><i class="fa-solid fa-sliders"></i> Load Control</h3>
-<div class="grid">
-<div class="card">Load1 <div id="load1" class="switch"></div></div>
-<div class="card">Load2 <div id="load2" class="switch"></div></div>
-<div class="card">Load3 <div id="load3" class="switch"></div></div>
-</div>
+  <section class="map-grid">
+    <div class="panel"><div class="panel-title"><h2>System Location</h2><span>Khan Younis - Gaza Strip</span></div><div class="map-box"><div id="map"></div></div></div>
+    <div class="panel"><div class="panel-title"><h2>Simulation Control</h2><span>Night / Day behavior</span></div><div class="ai-list"><div class="ai-item"><span>Simulation Mode</span><b id="simModeLabel">Auto Day Cycle</b></div><div class="ai-item"><span>Virtual Clock</span><b id="virtualClock">--:--</b></div><div class="ai-item"><span>Weather Factor</span><b id="weatherFactor">--</b></div><div class="ai-item"><span>Firebase Path</span><b>/devices/ESP32-SOLAR-01/live</b></div></div></div>
+  </section>
 
-<br>
-
-<h3><i class="fa-solid fa-triangle-exclamation"></i> Alerts</h3>
-<div id="alerts"></div>
-
-<br>
-
-<h3><i class="fa-solid fa-chart-line"></i> Energy Chart</h3>
-<canvas id="chart"></canvas>
-
-<br>
-
-<h3><i class="fa-solid fa-map-location-dot"></i> System Location</h3>
-<div id="map"></div>
-
+  <div class="footer">Programmed By PRISOFT — AI Solar Energy Management Dashboard</div>
 </div>
 
 <script type="module">
-
 const DEVICE = "ESP32-SOLAR-01";
+const SIMULATION_ENABLED = true;
 
-// 🔥 Firebase Config
 const firebaseConfig = {
   apiKey: "AIzaSyCu7kII41Ru2bHHfxuRz0LL3nAM9syXCPs",
   authDomain: "smart-solar-energy-80b88.firebaseapp.com",
@@ -107,118 +179,191 @@ const firebaseConfig = {
   storageBucket: "smart-solar-energy-80b88.firebasestorage.app",
   messagingSenderId: "760586246522",
   appId: "1:760586246522:web:27e7b46d498085bcdf9ec3",
-  measurementId: "G-6CPKBM5GVQ" 
+  measurementId: "G-6CPKBM5GVQ"
 };
 
 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
 const { getDatabase, ref, onValue, update } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-database.js");
+const appFirebase = initializeApp(firebaseConfig);
+const db = getDatabase(appFirebase);
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const $ = id => document.getElementById(id);
+const loginScreen = $("loginScreen"), app = $("app"), loginBtn = $("loginBtn"), logoutBtn = $("logoutBtn"), loginError = $("loginError");
+const statusEl = $("status"), connDot = $("connDot"), lastUpdate = $("lastUpdate");
+const v = $("v"), c = $("c"), b = $("b"), t = $("t"), p = $("p"), l = $("l"), rt = $("rt"), np = $("np");
+const alerts = $("alerts"), alertCount = $("alertCount"), batteryFill = $("batteryFill"), batteryText = $("batteryText");
+const batteryVoltage = $("batteryVoltage"), batteryHealth = $("batteryHealth"), chargeState = $("chargeState"), systemRisk = $("systemRisk");
+const sunMoon = $("sunMoon"), dayModeText = $("dayModeText"), aiScore = $("aiScore"), aiRing = $("aiRing");
+const shutdownPrediction = $("shutdownPrediction"), batteryTrend = $("batteryTrend"), recommendedMode = $("recommendedMode"), solarIntensity = $("solarIntensity");
+const forecast = $("forecast"), virtualClock = $("virtualClock"), weatherFactor = $("weatherFactor");
 
-// Chart
-const labels=[], prod=[], cons=[];
-const chart = new Chart(document.getElementById("chart"),{
-  type:'line',
-  data:{labels,datasets:[
-    {label:'Production',data:prod},
-    {label:'Consumption',data:cons}
-  ]}
-});
-
-// Map
-const map = L.map('map').setView([31.95,35.23], 13);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-const marker = L.marker([31.95,35.23]).addTo(map);
-// DOM Elements (مهم جداً)
-const status = document.getElementById("status");
-
-const v = document.getElementById("v");
-const c = document.getElementById("c");
-const b = document.getElementById("b");
-const t = document.getElementById("t");
-
-const p = document.getElementById("p");
-const l = document.getElementById("l");
-const rt = document.getElementById("rt");
-const np = document.getElementById("np");
-
-const alerts = document.getElementById("alerts");
-// Firebase
-onValue(ref(db,`devices/${DEVICE}/live`),(snap)=>{
-
-if(!snap.exists()) return;
-
-const d = snap.val();
-
-status.innerText="Firebase Live";
-
-// calculations
-let voltage = d.solarVoltage || 0;
-let current = d.solarCurrent || 0;
-let load = d.loadPower || 0;
-let battery = d.batteryPercent || 0;
-let temp = d.temperature || 0;
-
-let power = voltage * current;
-let net = power - load;
-let remaining = load > 0 ? ((battery / 100) * 1000 / load) : 0;
-
-// UI
-v.innerText = d.solarVoltage+" V";
-c.innerText = d.solarCurrent+" A";
-b.innerText = d.batteryPercent+" %";
-t.innerText = d.temperature+" °C";
-
-p.innerText = power.toFixed(0)+" W";
-l.innerText = d.loadPower+" W";
-rt.innerText = remaining.toFixed(1)+" h";
-np.innerText = net.toFixed(0)+" W";
-
-// chart
-labels.push(new Date().toLocaleTimeString());
-prod.push(power);
-cons.push(d.loadPower);
-
-if(labels.length>20){
-labels.shift();prod.shift();cons.shift();
+function login(){
+  const email = $("loginEmail").value.trim();
+  const pass = $("loginPassword").value.trim();
+  if(email === "admin@prisoft.local" && pass === "123456"){
+    localStorage.setItem("prisoftSolarLoggedIn","1");
+    loginScreen.style.display = "none";
+    app.classList.add("show");
+    setTimeout(()=>map.invalidateSize(),300);
+  } else {
+    loginError.style.display = "block";
+  }
 }
-chart.update();
-
-// switches
-setSwitch("load1",d.load1);
-setSwitch("load2",d.load2);
-setSwitch("load3",d.load3);
-
-// alerts
-let html="";
-if(d.batteryPercent<20) html+="<p style='color:red'>Battery Critical</p>";
-else if(d.batteryPercent<40) html+="<p style='color:orange'>Battery Low</p>";
-else html+="<p style='color:green'>Battery Good</p>";
-
-if(d.temperature>45) html+="<p style='color:red'>High Temperature</p>";
-if(d.loadPower>power) html+="<p style='color:orange'>Overload</p>";
-
-alerts.innerHTML=html;
-
-});
-
-// control
-function setSwitch(id,state){
-let el=document.getElementById(id);
-el.classList.toggle("on",state);
-
-el.onclick=()=>{
-let newState=!el.classList.contains("on");
-el.classList.toggle("on",newState);
-
-update(ref(db,`devices/${DEVICE}/commands`),{
-[id]:newState
-});
-};
+loginBtn.onclick = login;
+$("loginPassword").addEventListener("keydown", e => { if(e.key === "Enter") login(); });
+logoutBtn.onclick = () => { localStorage.removeItem("prisoftSolarLoggedIn"); location.reload(); };
+if(localStorage.getItem("prisoftSolarLoggedIn") === "1"){
+  loginScreen.style.display = "none";
+  app.classList.add("show");
 }
 
+const chartLabels = [], prodData = [], loadData = [], batteryData = [];
+const chart = new Chart($("chart"), {
+  type:"line",
+  data:{labels:chartLabels,datasets:[
+    {label:"Production W",data:prodData,borderWidth:3,tension:.38,fill:false},
+    {label:"Consumption W",data:loadData,borderWidth:3,tension:.38,fill:false},
+    {label:"Battery %",data:batteryData,borderWidth:3,tension:.38,fill:false,yAxisID:"y1"}
+  ]},
+  options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:"#eff8ff",font:{weight:"bold"}}}},scales:{x:{ticks:{color:"#8ea8c8"},grid:{color:"rgba(255,255,255,.06)"}},y:{ticks:{color:"#8ea8c8"},grid:{color:"rgba(255,255,255,.06)"}},y1:{position:"right",min:0,max:100,ticks:{color:"#8ea8c8"},grid:{drawOnChartArea:false}}}}
+});
+
+const map = L.map("map", { zoomControl:true }).setView([31.3400,34.3060],13);
+L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom:19, attribution:"© OpenStreetMap" }).addTo(map);
+L.marker([31.3400,34.3060]).addTo(map).bindPopup("<b>PRISOFT Solar System</b><br>Khan Younis - Gaza Strip<br>☀️ Smart Energy Monitoring").openPopup();
+
+let virtualHour = 7;
+let lastBattery = 75;
+function clamp(n,min,max){return Math.max(min,Math.min(max,n));}
+function fixed(n,d=1){return Number(n || 0).toFixed(d);}
+function dayFactor(hour){
+  if(hour < 5 || hour > 19) return 0;
+  const peak = 12;
+  return clamp(1 - Math.abs(hour - peak) / 7, 0, 1);
+}
+function buildSimData(){
+  virtualHour += 0.35;
+  if(virtualHour >= 24) virtualHour = 0;
+  const intensity = dayFactor(virtualHour);
+  const weather = clamp(.72 + Math.random() * .32, .65, 1.0);
+  const solarVoltage = intensity > .05 ? 15 + intensity * 7 + Math.random() * 1.2 : Math.random() * 1.8;
+  const solarCurrent = intensity > .05 ? (1.2 + intensity * 6.5) * weather : Math.random() * .25;
+  const production = solarVoltage * solarCurrent;
+  const baseLoad = 95 + Math.random() * 55;
+  const eveningBoost = (virtualHour > 18 || virtualHour < 2) ? 75 : 0;
+  const loadPower = baseLoad + eveningBoost + Math.random() * 80;
+  const net = production - loadPower;
+  lastBattery = clamp(lastBattery + (net / 900), 8, 99);
+  const load1 = true;
+  const load2 = lastBattery > 30;
+  const load3 = lastBattery > 62 && intensity > .20;
+  return {
+    solarVoltage:Number(solarVoltage.toFixed(1)),
+    solarCurrent:Number(solarCurrent.toFixed(1)),
+    batteryVoltage:Number((11.4 + (lastBattery / 100) * 1.35).toFixed(1)),
+    batteryPercent:Math.round(lastBattery),
+    batteryHealth:Math.round(82 + Math.random() * 16),
+    temperature:Math.round(25 + intensity * 11 + Math.random() * 8),
+    loadPower:Math.round(loadPower),
+    load1, load2, load3,
+    virtualHour:Number(virtualHour.toFixed(2)),
+    weatherFactor:Number(weather.toFixed(2)),
+    isDay:intensity > .08,
+    solarIntensity:Math.round(intensity * weather * 100),
+    timestamp:Date.now()
+  };
+}
+
+if(SIMULATION_ENABLED){
+  setInterval(() => update(ref(db, `devices/${DEVICE}/live`), buildSimData()), 2200);
+}
+
+function setSwitch(id,state){$(id).classList.toggle("on",!!state);}
+["load1","load2","load3"].forEach(id=>{
+  $(id).onclick = () => {
+    const state = !$(id).classList.contains("on");
+    setSwitch(id,state);
+    update(ref(db,`devices/${DEVICE}/commands`),{[id]:state,updatedAt:Date.now()});
+  };
+});
+
+function createAlerts(d,power,net){
+  const list = [];
+  if(d.batteryPercent <= 20) list.push(["red","fa-triangle-exclamation","Battery Critical","Battery is near shutdown. Heavy and medium loads must be disconnected."]);
+  else if(d.batteryPercent <= 40) list.push(["yellow","fa-battery-quarter","Battery Low","System should run in ECO mode and keep only critical loads."]);
+  else list.push(["green","fa-circle-check","Battery Stable","Battery level is suitable for normal operation."]);
+  if(d.temperature >= 45) list.push(["red","fa-temperature-high","High Temperature","Battery temperature is above the recommended range."]);
+  if(net < -90) list.push(["yellow","fa-plug-circle-bolt","Energy Deficit","Consumption is higher than solar production."]);
+  if(!d.isDay) list.push(["yellow","fa-moon","Night Mode","Solar production is minimal. Battery protection is active."]);
+  alertCount.textContent = `${list.length} alerts`;
+  alerts.innerHTML = list.map(a=>`<div class="alert ${a[0]}"><i class="fa-solid ${a[1]}"></i><div><b>${a[2]}</b><br><small>${a[3]}</small></div></div>`).join("");
+}
+
+function updateForecast(d,remaining,net){
+  const rows = [];
+  for(let i=1;i<=5;i++){
+    const projected = clamp(d.batteryPercent + (net/180)*i, 0, 100);
+    rows.push({label:`+${i} hour`,value:projected,status:projected<20?"Critical":projected<40?"Low":"Stable"});
+  }
+  forecast.innerHTML = rows.map(r=>`<div class="forecast-row"><b>${r.label}</b><div class="bar"><span style="width:${r.value}%"></span></div><span>${Math.round(r.value)}% ${r.status}</span></div>`).join("");
+}
+
+function updateAI(d,power,net,remaining){
+  const score = clamp(Math.round((d.batteryPercent*.55)+(d.batteryHealth*.25)+(d.solarIntensity*.20)),0,100);
+  aiScore.textContent = `${score}%`;
+  aiRing.style.background = `conic-gradient(${score<40?'var(--red)':score<65?'var(--yellow)':'var(--green)'} 0deg, ${score<40?'var(--red)':score<65?'var(--yellow)':'var(--green)'} ${score*3.6}deg, rgba(255,255,255,.09) ${score*3.6}deg)`;
+  shutdownPrediction.textContent = remaining > 24 ? "> 24 h" : `${fixed(remaining,1)} h`;
+  batteryTrend.textContent = net >= 0 ? "Charging / Positive" : "Discharging / Negative";
+  recommendedMode.textContent = d.batteryPercent < 35 ? "ECO" : d.isDay && net > 0 ? "NORMAL" : "PROTECTED";
+  solarIntensity.textContent = `${d.solarIntensity || 0}%`;
+}
+
+function render(d){
+  const voltage = Number(d.solarVoltage || 0);
+  const current = Number(d.solarCurrent || 0);
+  const load = Number(d.loadPower || 0);
+  const battery = Number(d.batteryPercent || 0);
+  const power = voltage * current;
+  const net = power - load;
+  const remaining = load > 0 ? ((battery / 100) * 1000 / load) : 0;
+
+  statusEl.textContent = "Firebase Live";
+  connDot.classList.remove("off");
+  lastUpdate.textContent = new Date().toLocaleTimeString();
+  v.textContent = fixed(voltage); c.textContent = fixed(current); b.textContent = fixed(battery,0); t.textContent = fixed(d.temperature,0);
+  p.textContent = fixed(power,0); l.textContent = fixed(load,0); rt.textContent = fixed(remaining,1); np.textContent = `${net>=0?'+':''}${fixed(net,0)}`;
+  batteryVoltage.textContent = `${fixed(d.batteryVoltage)} V`;
+  batteryHealth.textContent = `${fixed(d.batteryHealth,0)}%`;
+  chargeState.textContent = net >= 0 ? "Charging" : "Discharging";
+  systemRisk.textContent = battery < 20 ? "Critical" : battery < 40 ? "Medium" : "Low";
+  batteryText.textContent = battery > 70 ? "Excellent" : battery > 40 ? "Normal" : "Low";
+  batteryFill.style.width = `${clamp(battery,0,100)}%`;
+
+  const isDay = !!d.isDay;
+  sunMoon.textContent = isDay ? "☀️" : "🌙";
+  sunMoon.classList.toggle("night",!isDay);
+  dayModeText.textContent = isDay ? "DAY MODE" : "NIGHT MODE";
+  virtualClock.textContent = `${String(Math.floor(d.virtualHour || 0)).padStart(2,"0")}:${String(Math.round(((d.virtualHour || 0)%1)*60)).padStart(2,"0")}`;
+  weatherFactor.textContent = `${Math.round((d.weatherFactor || 1)*100)}%`;
+
+  setSwitch("load1",d.load1); setSwitch("load2",d.load2); setSwitch("load3",d.load3);
+  createAlerts(d,power,net);
+  updateForecast(d,remaining,net);
+  updateAI(d,power,net,remaining);
+
+  chartLabels.push(new Date().toLocaleTimeString()); prodData.push(Math.round(power)); loadData.push(Math.round(load)); batteryData.push(Math.round(battery));
+  if(chartLabels.length > 22){chartLabels.shift();prodData.shift();loadData.shift();batteryData.shift();}
+  chart.update();
+}
+
+onValue(ref(db,`devices/${DEVICE}/live`), snap => {
+  if(!snap.exists()) return;
+  render(snap.val());
+}, err => {
+  statusEl.textContent = "Firebase Error";
+  connDot.classList.add("off");
+  console.error(err);
+});
 </script>
-
 </body>
 </html>
