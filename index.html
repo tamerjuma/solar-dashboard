@@ -107,7 +107,7 @@ const firebaseConfig = {
   storageBucket: "smart-solar-energy-80b88.firebasestorage.app",
   messagingSenderId: "760586246522",
   appId: "1:760586246522:web:27e7b46d498085bcdf9ec3",
-  measurementId: "G-6CPKBM5GVQ"
+  measurementId: "G-6CPKBM5GVQ" 
 };
 
 const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js");
@@ -130,7 +130,20 @@ const chart = new Chart(document.getElementById("chart"),{
 const map = L.map('map').setView([31.95,35.23], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
 const marker = L.marker([31.95,35.23]).addTo(map);
+// DOM Elements (مهم جداً)
+const status = document.getElementById("status");
 
+const v = document.getElementById("v");
+const c = document.getElementById("c");
+const b = document.getElementById("b");
+const t = document.getElementById("t");
+
+const p = document.getElementById("p");
+const l = document.getElementById("l");
+const rt = document.getElementById("rt");
+const np = document.getElementById("np");
+
+const alerts = document.getElementById("alerts");
 // Firebase
 onValue(ref(db,`devices/${DEVICE}/live`),(snap)=>{
 
@@ -141,9 +154,15 @@ const d = snap.val();
 status.innerText="Firebase Live";
 
 // calculations
-let power = d.solarVoltage * d.solarCurrent;
-let net = power - d.loadPower;
-let remaining = d.loadPower>0 ? ((d.batteryPercent/100)*1000/d.loadPower) : 0;
+let voltage = d.solarVoltage || 0;
+let current = d.solarCurrent || 0;
+let load = d.loadPower || 0;
+let battery = d.batteryPercent || 0;
+let temp = d.temperature || 0;
+
+let power = voltage * current;
+let net = power - load;
+let remaining = load > 0 ? ((battery / 100) * 1000 / load) : 0;
 
 // UI
 v.innerText = d.solarVoltage+" V";
